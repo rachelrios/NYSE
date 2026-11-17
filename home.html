@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Today's Sock Market</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: #ffffff;
+    color: #080808;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  /* =============================
+     STOCK TICKER
+     ============================= */
+
+  .ticker-shell {
+    width: 100%;
+    overflow: hidden;
+    padding-top: 17px;
+    background: #fff;
+  }
+
+  .ticker {
+    display: flex;
+    width: max-content;
+    animation: ticker-scroll 32s linear infinite;
+  }
+
+  .ticker:hover {
+    animation-play-state: paused;
+  }
+
+  .ticker-set {
+    display: flex;
+    gap: 13px;
+    padding-right: 13px;
+  }
+
+  .ticker-item {
+    height: 38px;
+    min-width: 310px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d1d1;
+    border-left: 6px solid #69c5e5;
+    background: #fff;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+
+  .ticker-item .company,
+  .ticker-item .symbol,
+  .ticker-item .price,
+  .ticker-item .change {
+    padding: 0 12px;
+  }
+
+  .ticker-item .symbol,
+  .ticker-item .price,
+  .ticker-item .change {
+    border-left: 1px solid #ddd;
+  }
+
+  .ticker-item .symbol {
+    color: #4e4e4e;
+  }
+
+  .ticker-item .price {
+    color: #333;
+  }
+
+  .up {
+    color: #279a61;
+  }
+
+  .down {
+    color: #c53b3b;
+  }
+
+  .market-delay {
+    max-width: 1360px;
+    margin: 8px auto 0;
+    padding: 0 14px;
+    text-align: right;
+    font-size: 9px;
+    font-style: italic;
+  }
+
+  @keyframes ticker-scroll {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+
+  /* =============================
+     PAGE
+     ============================= */
+
+  .page {
+    max-width: 1190px;
+    margin: 0 auto;
+    padding: 4px 30px 80px;
+  }
+
+  h1 {
+    text-align: center;
+    margin: 4px 0 52px;
+    font-size: 39px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -1.2px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 630px) 380px;
+    gap: 52px;
+    justify-content: center;
+    align-items: start;
+  }
+
+
+  /* =============================
+     ARTICLE
+     ============================= */
+
+  .article-shadow {
+    position: relative;
+  }
+
+  .article-shadow::after {
+    content: "";
+    position: absolute;
+    left: 13px;
+    top: 13px;
+    right: -13px;
+    bottom: -13px;
+    background: #68c3e3;
+    z-index: -1;
+  }
+
+  .article {
+    min-height: 610px;
+    background: #fff;
+    border: 1.5px solid #111;
+    padding: 54px 51px 50px;
+  }
+
+  .authors {
+    font-weight: 700;
+    font-size: 13px;
+    margin: 0;
+  }
+
+  .date {
+    font-size: 13px;
+    margin: 3px 0 11px;
+  }
+
+  .greeting {
+    font-size: 13px;
+    margin: 0 0 23px;
+  }
+
+  .article p {
+    font-size: 13px;
+    line-height: 1.58;
+    margin: 0 0 17px;
+  }
+
+  .expand-btn {
+    margin-top: 35px;
+    display: inline-flex;
+    align-items: center;
+    gap: 40px;
+    background: #030303;
+    color: #fff;
+    border: none;
+    padding: 17px 21px;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: .1px;
+    cursor: pointer;
+  }
+
+  .expand-btn:hover {
+    background: #1f1f1f;
+  }
+
+  .arrow {
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+
+  /* =============================
+     RIGHT RAIL
+     ============================= */
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .card {
+    min-height: 178px;
+    border: 1.5px solid #111;
+    padding: 27px 30px;
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    column-gap: 24px;
+    align-items: start;
+  }
+
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-icon svg {
+    width: 46px;
+    height: 46px;
+  }
+
+  .card h2 {
+    margin: 0 0 22px;
+    font-size: 17px;
+    line-height: 1.2;
+    font-weight: 800;
+  }
+
+  .card p {
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0 0 20px;
+  }
+
+  .read-link {
+    display: inline-block;
+    border: 0;
+    padding: 0;
+    background: none;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    color: #050505;
+    text-decoration: none;
+  }
+
+  .read-link:hover {
+    text-decoration: underline;
+  }
+
+  .read-link span {
+    margin-left: 8px;
+    font-size: 17px;
+    font-weight: 400;
+  }
+
+
+  /* =============================
+     RESPONSIVE
+     ============================= */
+
+  @media (max-width: 950px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .page {
+      padding-left: 18px;
+      padding-right: 18px;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 34px;
+    }
+
+    .article {
+      padding: 35px 28px;
+    }
+
+    .sidebar {
+      grid-template-columns: 1fr;
+    }
+
+    .ticker-item {
+      min-width: 270px;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- STOCK TICKER -->
+
+<div class="ticker-shell">
+  <div id="ticker" class="ticker">
+
+    <div class="ticker-set">
+
+      <div class="ticker-item">
+        <span class="company">Wool</span>
+        <span class="symbol">Wo</span>
+        <span class="price">203.50</span>
+        <span class="change up">▲ 2.530</span>
+      </div>
+
+      <div class="ticker-item">
+        <span class="company">Cotton</span>
+        <span class="symbol">COT</span>
+        <span class="price">14.375</span>
+        <span class="change up">▲ 0.745</span>
+      </div>
+
+      <div class="ticker-item">
+        <span class="company">Polyester</span>
+        <span class="symbol">POL</span>
+        <span class="price">7.620</span>
+        <span class="change down">▼ 0.070</span>
+      </div>
+
+      <div class="ticker-item">
+        <span class="company">Nylon</span>
+        <span class="symbol">NYL</span>
+        <span class="price">39.175</span>
+        <span class="change up">▲ 0.915</span>
+      </div>
+
+      <div class="ticker-item">
+        <span class="company">Chiffon</span>
+        <span class="symbol">CHI</span>
+        <span class="price">5.41</span>
+        <span class="change down">▼ 0.060</span>
+      </div>
+
+    </div>
+
+    <!-- Duplicate ticker content for seamless scrolling -->
+
+    <div class="ticker-set">
+
+       <div class="ticker-item">
+        <span class="company">Wool</span>
+        <span class="symbol">Wo</span>
+        <span class="price">203.50</span>
+        <span class="change up">▲ 2.530</span>
+      </div>
+
+      <div class="ticker-item">
+        <span class="company">Cotton</span>
+        <span class="symbol">COT</span>
+        <span class="price">14.375</span>
+        <span class="change up">▲ 0.745</span>
+      </div>
+
+      <div class="ticker-item">
+        <span class="company">Polyester</span>
+        <span class="symbol">POL</span>
+        <span class="price">7.620</span>
+        <span class="change down">▼ 0.070</span>
+      </div>
+
+      <div class="ticker-item">
+        <span class="company">Nylon</span>
+        <span class="symbol">NYL</span>
+        <span class="price">39.175</span>
+        <span class="change up">▲ 0.915</span>
+      </div>
+
+      <div class="ticker-item">
+        <span class="company">Chiffon</span>
+        <span class="symbol">CHI</span>
+        <span class="price">5.41</span>
+        <span class="change down">▼ 0.060</span>
+      </div>
+
+
+     
+    </div>
+
+  </div>
+</div>
+
+<div class="market-delay">
+  Sock market data delayed minimum of 15 minutes
+</div>
+
+
+<!-- PAGE -->
+
+<main class="page">
+
+  <h1>Today’s Sock Market</h1>
+
+  <div class="layout">
+
+    <!-- LEFT ARTICLE -->
+
+    <div class="article-shadow">
+
+      <article class="article">
+
+        <p class="authors">
+          Sockie Balboa &amp; Sockrates
+        </p>
+
+        <p class="date">
+          November 17, 2026 at 9:00 a.m. EST
+        </p>
+
+        <p class="greeting">
+          Good morning,
+        </p>
+
+        <p>
+          Cotton is the new Polyester and Uggs reports earings tonight.
+          Ankleina Jolie was under pressure yesterday with the No-show sock
+          winter controversy. The S&amp;P (Socks & Pedicures) 500 fell 1.9% closing within 1%
+          of its 200d ma and the post-summer lows (~7,350). There was broad
+          based weakness with the equal-weight falling 1% with
+          long sock-oriented sectors outperforming. Compression yields hovered
+          around unchanged, but ankle socks were under pressure as the winter
+          continued to hit new years.
+        </p>
+
+        <p>
+          Meanwhile, markets are keeping a close eye on the latest developments in the hosiery trade.
+          The White House is reportedly considering new tariffs on imported polyester, raising concerns
+          that cotton could become the new safe-haven asset. 
+          The Federal Reserve is expected to keep cotton interest rates unchanged,
+          although investors are increasingly pricing in a potential rate cut 
+          as consumer confidence in the thread market continues to unravel.
+          
+          For now, investors are advised to keep their feet on the ground, avoid putting all their all their socks in one drawer,
+          and watch for further volatility. The market may be down, but at least there's still a good chance of finding a matching pair.
+        </p>
+
+        <button class="expand-btn" id="expandArticle" type="button">
+          EXPAND ARTICLE
+          <span class="arrow">›</span>
+        </button>
+
+        <div id="additionalArticle" hidden>
+          <p style="margin-top:28px;">
+            The latest Bloomberg data showed a sharp increase in mismatched pairs, suggesting consumer confidence may be wearing thin.
+          </p>
+        </div>
+
+      </article>
+
+    </div>
+
+
+    <!-- RIGHT SIDEBAR -->
+
+    <aside class="sidebar">
+
+      <section class="card">
+
+        <div class="card-icon">
+          <svg viewBox="0 0 64 64" fill="none">
+            <path d="M12 8h27v18h14v28H12V8z" stroke="#111" stroke-width="2"/>
+            <path d="M12 21L25 8" stroke="#111" stroke-width="2"/>
+            <circle cx="34" cy="34" r="11" fill="white" stroke="#6AC7E8" stroke-width="2"/>
+            <path d="M29 39V32M34 39V27M39 39V30"
+              stroke="#111" stroke-width="2"/>
+            <path d="M44 43l10 10" stroke="#111" stroke-width="2"/>
+          </svg>
+        </div>
+
+        <div>
+          <h2>Sign Up Now For The Sock Exchange</h2>
+
+          <p>
+            Form Closes December 15th, 2026.
+          </p>
+
+          <a class="read-link"
+             href="https://forms.gle/Am6WuBFcYM9F2Dk56"
+             target="_blank"
+             rel="noopener noreferrer">
+            SIGN UP NOW <span>›</span>
+          </a>
+        </div>
+
+      </section>
+
+
+      <section class="card">
+
+        <div class="card-icon">
+          <svg viewBox="0 0 64 64" fill="none">
+            <path d="M8 22L32 9l24 13H8z"
+              stroke="#111" stroke-width="2"/>
+            <path d="M13 27h38M14 50h36M9 55h46"
+              stroke="#111" stroke-width="2"/>
+            <path d="M17 27v23M27 27v23M37 27v23M47 27v23"
+              stroke="#69C7E8" stroke-width="3"/>
+          </svg>
+        </div>
+
+        <div>
+          <h2>2026 Best Sellers</h2>
+
+          <p>
+            Breaking the Stalemate: Crew Vs. Ankle
+          </p>
+          <a class="read-link"
+             href="https://www.bloomingdales.com/shop/best-sellers/Product_department/Socks?id=1093259"
+             target="_blank"
+             rel="noopener noreferrer">
+            READ NOW <span>›</span>
+          </a>
+        </div>
+
+      </section>
+
+
+      <section class="card">
+
+        <div class="card-icon">
+          <svg viewBox="0 0 64 64" fill="none">
+            <rect x="10" y="15" width="44" height="39"
+              stroke="#111" stroke-width="2"/>
+            <path d="M10 25h44M18 8v10M46 8v10"
+              stroke="#111" stroke-width="2"/>
+
+            <rect x="17" y="31" width="7" height="7"
+              stroke="#69C7E8" stroke-width="2"/>
+            <rect x="29" y="31" width="7" height="7"
+              stroke="#111" stroke-width="2"/>
+            <rect x="41" y="31" width="7" height="7"
+              stroke="#111" stroke-width="2"/>
+
+            <rect x="17" y="42" width="7" height="7"
+              stroke="#111" stroke-width="2"/>
+            <rect x="29" y="42" width="7" height="7"
+              stroke="#69C7E8" stroke-width="2"/>
+            <rect x="41" y="42" width="7" height="7"
+              stroke="#111" stroke-width="2"/>
+          </svg>
+        </div>
+
+        <div>
+          <h2>2026 Trading Calendar</h2>
+
+          <p>
+            Holidays and other market related events.
+          </p>
+
+          <a class="read-link"
+             href="https://canva.link/jzhuigjelvoywu1"
+             target="_blank"
+             rel="noopener noreferrer">
+            READ NOW <span>›</span>
+          </a>
+        </div>
+
+      </section>
+
+    </aside>
+
+  </div>
+</main>
+
+
+<script>
+  const expandButton = document.getElementById("expandArticle");
+  const additionalArticle = document.getElementById("additionalArticle");
+
+  expandButton.addEventListener("click", () => {
+    const isHidden = additionalArticle.hidden;
+
+    additionalArticle.hidden = !isHidden;
+
+    expandButton.firstChild.textContent =
+      isHidden ? "COLLAPSE ARTICLE " : "EXPAND ARTICLE ";
+  });
+</script>
+
+</body>
+</html>
